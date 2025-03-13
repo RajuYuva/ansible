@@ -1,0 +1,19 @@
+---
+- name: Replace string in JSON file
+  hosts: 172.31.44.0
+  become: true  # To execute tasks with sudo or become
+  
+  tasks:
+    - name: Read JSON file
+      ansible.builtin.slurp:
+        path: /home/nagaraju/ansible/sample.json
+      register: json_content
+    - name: Convert JSON content to string
+      set_fact:
+        json_string: "{{ json_content['content'] | b64decode | from_json | to_nice_json }}"
+    - name: Replace string in JSON string
+      ansible.builtin.replace:
+        path:  /home/nagaraju/ansible/sample.json
+        regexp: 'Joe'
+        replace: 'Naga'
+      when: "'Joe' in json_string"      
